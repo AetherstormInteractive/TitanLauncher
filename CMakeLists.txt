@@ -10,3 +10,9 @@ add_subdirectory ("TitanLauncher")
 add_subdirectory ("3rdparty/json")
 add_subdirectory ("3rdparty/glfw")
 add_subdirectory ("3rdparty/wxwidgets")
+
+set_target_properties(TitanLauncher glfw nlohmann_json PROPERTIES
+    ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/lib"
+    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/lib"
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin"
+)
