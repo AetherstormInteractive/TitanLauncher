@@ -7,3 +7,6 @@ project ("TitanLauncher")
 
 # Include sub-projects.
 add_subdirectory ("TitanLauncher")
+add_subdirectory ("3rdparty/json")
+add_subdirectory ("3rdparty/glfw")
+add_subdirectory ("3rdparty/wxwidgets")
