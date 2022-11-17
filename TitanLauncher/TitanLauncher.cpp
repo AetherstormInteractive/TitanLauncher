@@ -20,6 +20,7 @@ public:
     wxBookCtrl* book;
     wxListBox* listbox1;
     wxListBox* listbox2;
+    wxListBox* listbox3;
     wxCheckBox* checkbox1;
     wxTextCtrl* display_width;
     wxTextCtrl* display_height;
@@ -28,6 +29,7 @@ public:
     void OnToggleFullscreen(wxCommandEvent& event);
     void OnResListBoxDoubleClick(wxCommandEvent& event);
     void OnRatioListBoxDoubleClick(wxCommandEvent& event);
+    void OnBackendListBoxDoubleClick(wxCommandEvent& event);
     void OnCustomResEnter1(wxCommandEvent& event);
     void OnCustomResEnter2(wxCommandEvent& event);
     void OnQuit(wxCommandEvent& event);
@@ -42,13 +44,14 @@ const int CHECKBOX1 = 101;
 
 const int LISTBOX1 = 102;
 const int LISTBOX2 = 103;
+const int LISTBOX3 = 104;
 
-const int TEXTBOX1 = 104;
-const int TEXTBOX2 = 105;
-const int TEXTBOX3 = 106;
+const int TEXTBOX1 = 105;
+const int TEXTBOX2 = 106;
+const int TEXTBOX3 = 107;
 
-const int STATICTEXT1 = 107;
-const int STATICTEXT2 = 108;
+const int STATICTEXT1 = 108;
+const int STATICTEXT2 = 109;
 
 const int FILE_QUIT = wxID_EXIT;
 const int HELP_ABOUT = wxID_ABOUT;
@@ -62,6 +65,8 @@ EVT_LISTBOX_DCLICK(LISTBOX1,
     MyFrame::OnResListBoxDoubleClick)
     EVT_LISTBOX_DCLICK(LISTBOX2,
         MyFrame::OnRatioListBoxDoubleClick)
+    EVT_LISTBOX_DCLICK(LISTBOX3,
+        MyFrame::OnBackendListBoxDoubleClick)
     EVT_MENU(FILE_QUIT, MyFrame::OnQuit)
     EVT_MENU(HELP_ABOUT, MyFrame::OnAbout)
     END_EVENT_TABLE()
@@ -109,6 +114,17 @@ wxString sd_choices[] =
     _T("1920x1440")
 };
 
+wxString backend_choices[] =
+{
+    _T("OpenGL"),
+    _T("Vulkan"),
+    _T("Metal"),
+    _T("DirectX11"),
+    _T("DirectX12"),
+    _T("OpenGL ES")
+};
+
+
 MyFrame::MyFrame(const wxString& title)
     : wxFrame(NULL, wxID_ANY, title, wxPoint(50, 30), wxSize(960, 540))
 {
@@ -140,6 +156,10 @@ MyFrame::MyFrame(const wxString& title)
     listbox1 = new wxListBox(panel, LISTBOX1,
         wxPoint(75, 25), wxSize(150, 150),
         9, widescreen_choices, wxLB_SINGLE);
+
+    listbox3 = new wxListBox(panel, LISTBOX3,
+        wxPoint(235, 25), wxSize(75, 150),
+        6, backend_choices, wxLB_SINGLE);
 
     checkbox1 = new wxCheckBox(panel, CHECKBOX1,
         _T("Fullscreen?"), wxPoint(15, 175), wxSize(100, 30));
@@ -384,4 +404,37 @@ void MyFrame::OnCustomResEnter2(wxCommandEvent& event)
         in.close();
         out.close();
     }
+}
+
+void MyFrame::OnBackendListBoxDoubleClick(wxCommandEvent& event)
+{
+    std::ifstream in("config.ini");
+    json infile = json::parse(in);
+
+    if (event.GetString() == "OpenGL")
+    {
+        infile["Display"]["Backend"] = "OpenGL";
+    }
+    else if (event.GetString() == "Vulkan")
+    {
+        infile["Display"]["Backend"] = "Vulkan";
+    }
+    else if (event.GetString() == "Metal")
+    {
+        infile["Display"]["Backend"] = "Metal";
+    }
+    else if (event.GetString() == "DirectX11")
+    {
+        infile["Display"]["Backend"] = "DirectX11";
+    }
+    else if (event.GetString() == "DirectX12")
+    {
+        infile["Display"]["Backend"] = "DirectX12";
+    }
+
+    std::ofstream out("config.ini");
+    out << std::setw(4) << infile << std::endl;
+
+    in.close();
+    out.close();
 }
