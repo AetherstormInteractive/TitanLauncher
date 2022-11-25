@@ -23,15 +23,15 @@ public:
     wxListBox* listbox1;
     wxListBox* listbox2;
     wxListBox* listbox3;
-    wxCheckBox* checkbox1;
+    wxListBox* listbox4;
     wxTextCtrl* display_width;
     wxTextCtrl* display_height;
     wxTextCtrl* textLog;
     MyFrame(const wxString& title);
-    void OnToggleFullscreen(wxCommandEvent& event);
     void OnResListBoxDoubleClick(wxCommandEvent& event);
     void OnRatioListBoxDoubleClick(wxCommandEvent& event);
     void OnBackendListBoxDoubleClick(wxCommandEvent& event);
+    void OnWindowListBoxDoubleClick(wxCommandEvent& event);
     void OnCustomResEnter1(wxCommandEvent& event);
     void OnCustomResEnter2(wxCommandEvent& event);
     void OnQuit(wxCommandEvent& event);
@@ -42,11 +42,11 @@ private:
 
 // Declare some IDs. These are arbitrary.
 const int BOOKCTRL = 100;
-const int CHECKBOX1 = 101;
 
 const int LISTBOX1 = 102;
 const int LISTBOX2 = 103;
 const int LISTBOX3 = 104;
+const int LISTBOX4 = 110;
 
 const int TEXTBOX1 = 105;
 const int TEXTBOX2 = 106;
@@ -60,7 +60,6 @@ const int HELP_ABOUT = wxID_ABOUT;
 
 // Attach the event handlers. Put this after MyFrame declaration.
 BEGIN_EVENT_TABLE(MyFrame, wxFrame)
-EVT_CHECKBOX(CHECKBOX1, MyFrame::OnToggleFullscreen)
 EVT_TEXT_ENTER(TEXTBOX2, MyFrame::OnCustomResEnter1)
 EVT_TEXT_ENTER(TEXTBOX3, MyFrame::OnCustomResEnter2)
 EVT_LISTBOX_DCLICK(LISTBOX1,
@@ -69,6 +68,8 @@ EVT_LISTBOX_DCLICK(LISTBOX1,
         MyFrame::OnRatioListBoxDoubleClick)
     EVT_LISTBOX_DCLICK(LISTBOX3,
         MyFrame::OnBackendListBoxDoubleClick)
+    EVT_LISTBOX_DCLICK(LISTBOX4,
+        MyFrame::OnWindowListBoxDoubleClick)
     EVT_MENU(FILE_QUIT, MyFrame::OnQuit)
     EVT_MENU(HELP_ABOUT, MyFrame::OnAbout)
     END_EVENT_TABLE()
@@ -126,6 +127,13 @@ wxString backend_choices[] =
     _T("SDL2")
 };
 
+wxString window_mode_choices[] =
+{
+    _T("Fullscreen"),
+    _T("Borderless Fullscreen"),
+    _T("Windowed")
+};
+
 
 MyFrame::MyFrame(const wxString& title)
     : wxFrame(NULL, wxID_ANY, title, wxPoint(50, 30), wxSize(960, 540))
@@ -163,8 +171,9 @@ MyFrame::MyFrame(const wxString& title)
         wxPoint(235, 25), wxSize(75, 150),
         6, backend_choices, wxLB_SINGLE);
 
-    checkbox1 = new wxCheckBox(panel, CHECKBOX1,
-        _T("Fullscreen?"), wxPoint(15, 175), wxSize(100, 30));
+    listbox4 = new wxListBox(panel, LISTBOX4,
+        wxPoint(320, 25), wxSize(125, 150),
+        3, window_mode_choices, wxLB_SINGLE);
 
     new wxStaticText(panel, STATICTEXT1, _T("Custom"), wxPoint(15, 215), wxSize(50, 12), wxALIGN_LEFT);
     display_width = new wxTextCtrl(panel, TEXTBOX2, _T("Width\n"),
@@ -173,23 +182,7 @@ MyFrame::MyFrame(const wxString& title)
     display_height = new wxTextCtrl(panel, TEXTBOX3, _T("Height\n"),
         wxPoint(65, 235), wxSize(50, 20), wxTE_LEFT | wxTE_PROCESS_ENTER);
 
-    std::ifstream in(configPath);
-    json infile = json::parse(in);
-
-    if (infile["Display"]["isFullscreen"] == true)
-    {
-        checkbox1->SetValue(true);
-        is_fullscreen = true;
-    }
-    else
-    {
-        checkbox1->SetValue(false);
-        is_fullscreen = false;
-    }
-
-    in.close();
     book->AddPage(panel, _T("Display"), false);
-    
 
     panel = new wxPanel(book);
     wxBoxSizer* mysizer = new wxBoxSizer(wxVERTICAL);
@@ -213,23 +206,6 @@ void MyFrame::OnAbout(wxCommandEvent& WXUNUSED(event))
 
     wxMessageBox(msg, _T("About My Program"),
         wxOK | wxICON_INFORMATION, this);
-}
-
-
-
-void MyFrame::OnToggleFullscreen(wxCommandEvent& WXUNUSED(event))
-{
-    is_fullscreen = !is_fullscreen;
-    std::ifstream in(configPath);
-    json infile = json::parse(in);
-
-    infile["Display"]["isFullscreen"] = is_fullscreen;
-
-    std::ofstream out(configPath);
-    out << std::setw(4) << infile << std::endl;
-
-    in.close();
-    out.close();
 }
 
 void MyFrame::OnResListBoxDoubleClick(wxCommandEvent& event)
@@ -369,6 +345,49 @@ void MyFrame::OnRatioListBoxDoubleClick(wxCommandEvent& event)
         listbox1->Append(widescreen_choices[6]);
         listbox1->Append(widescreen_choices[7]);
         listbox1->Append(widescreen_choices[8]);
+    }
+}
+
+void MyFrame::OnWindowListBoxDoubleClick(wxCommandEvent& event)
+{
+    if (event.GetString() == "Fullscreen")
+    {
+        std::ifstream in(configPath);
+        json infile = json::parse(in);
+
+        infile["Display"]["WindowMode"] = 1;
+
+        std::ofstream out(configPath);
+        out << std::setw(4) << infile << std::endl;
+
+        in.close();
+        out.close();
+    }
+    else if (event.GetString() == "Borderless Fullscreen")
+    {
+        std::ifstream in(configPath);
+        json infile = json::parse(in);
+
+        infile["Display"]["WindowMode"] = 2;
+
+        std::ofstream out(configPath);
+        out << std::setw(4) << infile << std::endl;
+
+        in.close();
+        out.close();
+    }
+    else if (event.GetString() == "Windowed")
+    {
+        std::ifstream in(configPath);
+        json infile = json::parse(in);
+        
+        infile["Display"]["WindowMode"] = 0;
+
+        std::ofstream out(configPath);
+        out << std::setw(4) << infile << std::endl;
+
+        in.close();
+        out.close();
     }
 }
 
