@@ -120,7 +120,6 @@ wxString backend_choices[] =
 {
     _T("OpenGL"),
     _T("Vulkan"),
-    _T("Metal"),
     _T("DirectX11"),
     _T("DirectX12"),
     _T("SDL2")
@@ -161,7 +160,7 @@ MyFrame::MyFrame(const wxString& title)
 
     listbox3 = new wxListBox(panel, LISTBOX3,
         wxPoint(235, 25), wxSize(75, 150),
-        6, backend_choices, wxLB_SINGLE);
+        5, backend_choices, wxLB_SINGLE);
 
     checkbox1 = new wxCheckBox(panel, CHECKBOX1,
         _T("Fullscreen?"), wxPoint(15, 175), wxSize(100, 30));
@@ -417,13 +416,13 @@ void MyFrame::OnBackendListBoxDoubleClick(wxCommandEvent& event)
     {
         infile["Display"]["Backend"] = "OpenGL";
     }
+    else if (event.GetString() == "OpenGL ES")
+    {
+        infile["Display"]["Backend"] = "OpenGLES";
+    }
     else if (event.GetString() == "Vulkan")
     {
         infile["Display"]["Backend"] = "Vulkan";
-    }
-    else if (event.GetString() == "Metal")
-    {
-        infile["Display"]["Backend"] = "Metal";
     }
     else if (event.GetString() == "DirectX11")
     {
