@@ -14,6 +14,8 @@ public:
 
 using json = nlohmann::ordered_json;
 
+std::string configPath = "config/engineConfig.ini";
+
 class MyFrame : public wxFrame
 {
 public:
@@ -121,7 +123,7 @@ wxString backend_choices[] =
     _T("Metal"),
     _T("DirectX11"),
     _T("DirectX12"),
-    _T("OpenGL ES")
+    _T("SDL2")
 };
 
 
@@ -171,7 +173,7 @@ MyFrame::MyFrame(const wxString& title)
     display_height = new wxTextCtrl(panel, TEXTBOX3, _T("Height\n"),
         wxPoint(65, 235), wxSize(50, 20), wxTE_LEFT | wxTE_PROCESS_ENTER);
 
-    std::ifstream in("config.ini");
+    std::ifstream in(configPath);
     json infile = json::parse(in);
 
     if (infile["Display"]["isFullscreen"] == true)
@@ -218,12 +220,12 @@ void MyFrame::OnAbout(wxCommandEvent& WXUNUSED(event))
 void MyFrame::OnToggleFullscreen(wxCommandEvent& WXUNUSED(event))
 {
     is_fullscreen = !is_fullscreen;
-    std::ifstream in("config.ini");
+    std::ifstream in(configPath);
     json infile = json::parse(in);
 
     infile["Display"]["isFullscreen"] = is_fullscreen;
 
-    std::ofstream out("config.ini");
+    std::ofstream out(configPath);
     out << std::setw(4) << infile << std::endl;
 
     in.close();
@@ -236,7 +238,7 @@ void MyFrame::OnResListBoxDoubleClick(wxCommandEvent& event)
     *textLog << event.GetString();
     *textLog << "\n";
 
-    std::ifstream in("config.ini");
+    std::ifstream in(configPath);
     json infile = json::parse(in);
 
     //widescreen 16:9
@@ -328,7 +330,7 @@ void MyFrame::OnResListBoxDoubleClick(wxCommandEvent& event)
         infile["Display"]["Height"] = 1440;
     }
 
-    std::ofstream out("config.ini");
+    std::ofstream out(configPath);
     out << std::setw(4) << infile << std::endl;
 
     in.close();
@@ -374,13 +376,13 @@ void MyFrame::OnCustomResEnter1(wxCommandEvent& event)
 {
     if (event.GetString().IsNumber())
     {
-        std::ifstream in("config.ini");
+        std::ifstream in(configPath);
         json infile = json::parse(in);
         int num;
         num = wxAtoi(event.GetString());
         infile["Display"]["Width"] = num;
 
-        std::ofstream out("config.ini");
+        std::ofstream out(configPath);
         out << std::setw(4) << infile << std::endl;
 
         in.close();
@@ -392,13 +394,13 @@ void MyFrame::OnCustomResEnter2(wxCommandEvent& event)
 {
     if (event.GetString().IsNumber())
     {
-        std::ifstream in("config.ini");
+        std::ifstream in(configPath);
         json infile = json::parse(in);
         int num;
         num = wxAtoi(event.GetString());
         infile["Display"]["Height"] = num;
 
-        std::ofstream out("config.ini");
+        std::ofstream out(configPath);
         out << std::setw(4) << infile << std::endl;
 
         in.close();
@@ -408,7 +410,7 @@ void MyFrame::OnCustomResEnter2(wxCommandEvent& event)
 
 void MyFrame::OnBackendListBoxDoubleClick(wxCommandEvent& event)
 {
-    std::ifstream in("config.ini");
+    std::ifstream in(configPath);
     json infile = json::parse(in);
 
     if (event.GetString() == "OpenGL")
@@ -431,8 +433,12 @@ void MyFrame::OnBackendListBoxDoubleClick(wxCommandEvent& event)
     {
         infile["Display"]["Backend"] = "DirectX12";
     }
+    else if (event.GetString() == "SDL2")
+    {
+        infile["Display"]["Backend"] = "SDL2";
+    }
 
-    std::ofstream out("config.ini");
+    std::ofstream out(configPath);
     out << std::setw(4) << infile << std::endl;
 
     in.close();
