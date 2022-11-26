@@ -20,10 +20,10 @@ class MyFrame : public wxFrame
 {
 public:
     wxBookCtrl* book;
-    wxListBox* listbox1;
-    wxListBox* listbox2;
-    wxListBox* listbox3;
-    wxListBox* listbox4;
+    wxChoice* listbox1;
+    wxChoice* listbox2;
+    wxChoice* listbox3;
+    wxChoice* listbox4;
     wxTextCtrl* display_width;
     wxTextCtrl* display_height;
     wxTextCtrl* textLog;
@@ -62,13 +62,13 @@ const int HELP_ABOUT = wxID_ABOUT;
 BEGIN_EVENT_TABLE(MyFrame, wxFrame)
 EVT_TEXT_ENTER(TEXTBOX2, MyFrame::OnCustomResEnter1)
 EVT_TEXT_ENTER(TEXTBOX3, MyFrame::OnCustomResEnter2)
-EVT_LISTBOX_DCLICK(LISTBOX1,
+EVT_CHOICE(LISTBOX1,
     MyFrame::OnResListBoxDoubleClick)
-    EVT_LISTBOX_DCLICK(LISTBOX2,
+    EVT_CHOICE(LISTBOX2,
         MyFrame::OnRatioListBoxDoubleClick)
-    EVT_LISTBOX_DCLICK(LISTBOX3,
+    EVT_CHOICE(LISTBOX3,
         MyFrame::OnBackendListBoxDoubleClick)
-    EVT_LISTBOX_DCLICK(LISTBOX4,
+    EVT_CHOICE(LISTBOX4,
         MyFrame::OnWindowListBoxDoubleClick)
     EVT_MENU(FILE_QUIT, MyFrame::OnQuit)
     EVT_MENU(HELP_ABOUT, MyFrame::OnAbout)
@@ -159,28 +159,28 @@ MyFrame::MyFrame(const wxString& title)
 
     panel = new wxPanel(book);
 
-    listbox2 = new wxListBox(panel, LISTBOX2,
+    listbox2 = new wxChoice(panel, LISTBOX2,
         wxPoint(15, 25), wxSize(50, 85),
         2, ratio_choices, wxLB_SINGLE);
 
-    listbox1 = new wxListBox(panel, LISTBOX1,
+    listbox1 = new wxChoice(panel, LISTBOX1,
         wxPoint(75, 25), wxSize(150, 150),
         9, widescreen_choices, wxLB_SINGLE);
 
-    listbox3 = new wxListBox(panel, LISTBOX3,
+    listbox3 = new wxChoice(panel, LISTBOX3,
         wxPoint(235, 25), wxSize(75, 150),
         6, backend_choices, wxLB_SINGLE);
 
-    listbox4 = new wxListBox(panel, LISTBOX4,
+    listbox4 = new wxChoice(panel, LISTBOX4,
         wxPoint(320, 25), wxSize(125, 150),
         3, window_mode_choices, wxLB_SINGLE);
 
-    new wxStaticText(panel, STATICTEXT1, _T("Custom"), wxPoint(15, 215), wxSize(50, 12), wxALIGN_LEFT);
+    new wxStaticText(panel, STATICTEXT1, _T("Custom"), wxPoint(15, 60), wxSize(50, 12), wxALIGN_LEFT);
     display_width = new wxTextCtrl(panel, TEXTBOX2, _T("Width\n"),
-        wxPoint(15, 235), wxSize(50, 20), wxTE_LEFT | wxTE_PROCESS_ENTER);
+        wxPoint(15, 85), wxSize(50, 20), wxTE_LEFT | wxTE_PROCESS_ENTER);
 
     display_height = new wxTextCtrl(panel, TEXTBOX3, _T("Height\n"),
-        wxPoint(65, 235), wxSize(50, 20), wxTE_LEFT | wxTE_PROCESS_ENTER);
+        wxPoint(65, 85), wxSize(50, 20), wxTE_LEFT | wxTE_PROCESS_ENTER);
 
     book->AddPage(panel, _T("Display"), false);
 
