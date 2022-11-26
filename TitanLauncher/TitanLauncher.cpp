@@ -136,7 +136,7 @@ wxString window_mode_choices[] =
 
 
 MyFrame::MyFrame(const wxString& title)
-    : wxFrame(NULL, wxID_ANY, title, wxPoint(50, 30), wxSize(960, 540))
+    : wxFrame(NULL, wxID_ANY, title, wxPoint(wxGetDisplaySize().GetX() / 4, wxGetDisplaySize().GetY() / 4), wxSize(960, 540), wxNO_BORDER)
 {
     SetIcon(wxICON(sample));
     wxMenu* fileMenu = new wxMenu;
